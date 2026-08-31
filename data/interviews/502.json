@@ -1,0 +1,200 @@
+{
+  "problem_id": 502,
+  "status": "solved",
+  "completed_at": "2026-08-31T01:26:08+09:00",
+  "duration_minutes": 133.83,
+  "duration_display": "2h 13m 50s",
+  "scores": {
+    "coding_overall": 3.2,
+    "problem_understanding": 3.6,
+    "clarifying_questions": 2.5,
+    "optimization": 2.8,
+    "coding": 3.3,
+    "testing": 3.4,
+    "complexity": 3.2,
+    "english_overall": 3.2,
+    "english_clarity": 3.4,
+    "english_structure": 3.3,
+    "english_naturalness": 2.9,
+    "english_conciseness": 3.6,
+    "english_grammar_vocabulary": 2.8,
+    "english_technical_communication": 3.3
+  },
+  "strengths": [
+    "Identified the greedy objective early: choose the highest-profit project among currently affordable projects.",
+    "Correctly identified the O(k*n) brute-force approach.",
+    "After guidance, understood the sort + forward pointer + max-heap invariant and implemented it correctly.",
+    "Found and fixed the repeated-scan issue with an early break.",
+    "Successfully dry-ran both a normal case and an edge case.",
+    "Asked detailed Big-O questions instead of memorizing the final answer."
+  ],
+  "weaknesses": [
+    "Needed strong interviewer guidance to recall max heap / priority_queue.",
+    "Needed guidance to discover the sorted-capital + forward-pointer optimization.",
+    "Clarifying questions were mostly skipped at the start.",
+    "C++ STL syntax slowed implementation: vector-of-vectors, sort, priority_queue, push_back, headers.",
+    "Initially mixed up O(log n) per heap operation with O(n log n) total heap operations.",
+    "Should proactively mention the empty-heap early-exit case before coding."
+  ],
+  "english_habits": [
+    "Technical meaning was usually understandable, but articles, plurals, and prepositions were often unnatural.",
+    "Some phrases were direct translations, e.g. 'under or same with w' and 'pop out'.",
+    "Numbered explanations improved clarity.",
+    "A brief pause to form a complete sentence would make explanations sound more confident and natural."
+  ],
+  "rewrites": [
+    {
+      "original": "Each step, I choose 1 projects with biggest profits among selections affordable with w capital that are unselected before.",
+      "better_spoken_english": "At each step, I choose the unselected project with the highest profit among the projects I can currently afford."
+    },
+    {
+      "original": "In each k step, I need to scan all n items to find project in specific condition.",
+      "better_spoken_english": "In each of the k iterations, I would have to scan all n projects to find the most profitable project that is currently affordable."
+    },
+    {
+      "original": "we don't need to scan them, since they can't be selected. the w is not enough to start the projects.",
+      "better_spoken_english": "We don’t need to scan the remaining projects because the list is sorted by capital, so none of them can be afforded with the current capital."
+    },
+    {
+      "original": "I used sort and max heap for selecting max profit in each step among the items whose capitals are lower than current capital.",
+      "better_spoken_english": "I sort the projects by required capital and use a max heap to select the highest-profit project among all projects I can currently afford."
+    }
+  ],
+  "revealed_pattern": "Greedy + sorting by eligibility threshold + max heap (priority queue) + monotonic forward pointer",
+  "selection_reason": "Randomly selected as part of the weekly Hard x2 set. In hindsight, it is useful interview practice for maintaining a changing set of eligible candidates and repeatedly selecting the best one.",
+  "recognition_signals": [
+    "Repeatedly choose the maximum/minimum among currently eligible candidates.",
+    "Eligibility is controlled by a threshold such as required_capital <= current_capital.",
+    "The threshold only moves forward, so sort once and sweep with a pointer.",
+    "Previously eligible but unchosen candidates must remain available for later rounds.",
+    "Brute force repeatedly rescans all candidates at every step."
+  ],
+  "retry_recommended": true,
+  "retry_after_days": 14,
+  "implementation_questions": [
+    {
+      "topic": "C++ project representation",
+      "questions": [
+        "How do I store (capital, profit) pairs?",
+        "Can I use vector<vector<int>> instead of pair?",
+        "What does {} mean?"
+      ],
+      "notes": "Used vector<vector<int>> and push_back({capital[i], profits[i]})."
+    },
+    {
+      "topic": "Sorting",
+      "questions": [
+        "How can I sort the project list?",
+        "What is lexicographical sorting?"
+      ],
+      "notes": "sort(projects.begin(), projects.end()) compares the first inner value first, so capital is the primary key."
+    },
+    {
+      "topic": "Heap / priority_queue",
+      "questions": [
+        "What is a normal max heap in C++?",
+        "Is priority_queue an array?",
+        "What happens if top() or pop() is called on an empty heap?"
+      ],
+      "notes": "priority_queue<int> is a max heap by default. Use push/top/pop/empty."
+    },
+    {
+      "topic": "Pointer / loops",
+      "questions": [
+        "If i is initialized from pointer, does i keep changing when pointer changes?",
+        "Why does a forward-only pointer prevent rescanning?"
+      ],
+      "notes": "i and pointer are separate variables; pointer only moves forward."
+    },
+    {
+      "topic": "Complexity",
+      "questions": [
+        "What are heap insertion/deletion complexities?",
+        "Why add sequential complexities instead of multiplying them?",
+        "Why drop constants in Big-O?",
+        "Does O(k*n + n log n + k log n) simplify to O(n^2) when k <= n?",
+        "Are constants also dropped in space complexity?"
+      ],
+      "notes": "Final optimized complexity is O(n log n) time and O(n) auxiliary space."
+    }
+  ],
+  "final_code": "#include <algorithm>\n#include <queue>\n\nclass Solution {\npublic:\n    int findMaximizedCapital(int k, int w, vector<int>& profits, vector<int>& capital) {\n        int n = profits.size();\n        vector<vector<int>> pairs;\n        priority_queue<int> max_heap;\n        int pointer = 0;\n\n        for (int i = 0; i < n; i++) {\n            pairs.push_back({capital[i], profits[i]});\n        }\n\n        sort(pairs.begin(), pairs.end());\n\n        while (k > 0) {\n            for (int i = pointer; i < n; i++) {\n                if (pairs[i][0] > w) break;\n                max_heap.push(pairs[i][1]);\n                pointer++;\n            }\n\n            if (max_heap.empty()) break;\n            w += max_heap.top();\n            max_heap.pop();\n            k--;\n        }\n\n        return w;\n    }\n};",
+  "transcript": [
+    {
+      "role": "candidate",
+      "text": "Problem understanding: inputs are k, w, profits, capital; choose up to k projects to maximize final capital, subject to minimum capital requirements."
+    },
+    {
+      "role": "interviewer",
+      "text": "Clarified that profit is added to current capital rather than replacing it."
+    },
+    {
+      "role": "candidate",
+      "text": "Proposed greedy selection: at each step choose the highest-profit currently affordable unselected project."
+    },
+    {
+      "role": "candidate",
+      "text": "Identified straightforward complexity as O(k*n)."
+    },
+    {
+      "role": "interviewer",
+      "text": "Asked what repeated work causes O(k*n), then guided toward maintaining already-affordable projects."
+    },
+    {
+      "role": "candidate",
+      "text": "Considered categorizing projects by capital and using maps; could not yet identify the best structure for repeatedly selecting maximum profit."
+    },
+    {
+      "role": "interviewer",
+      "text": "Gradually prompted toward a max heap / priority_queue."
+    },
+    {
+      "role": "candidate",
+      "text": "Identified max heap after hints."
+    },
+    {
+      "role": "interviewer",
+      "text": "Guided toward sorting projects by required capital and scanning them with a forward-only pointer as w increases."
+    },
+    {
+      "role": "candidate",
+      "text": "Worked through examples and understood that all newly affordable profits are pushed to the heap, while unchosen profits remain there."
+    },
+    {
+      "role": "candidate",
+      "text": "Asked about heap insertion/deletion complexity, sorting complexity, Big-O constant removal, and sequential vs nested complexity."
+    },
+    {
+      "role": "candidate",
+      "text": "Asked implementation questions about vector<vector<int>>, pair alternatives, initializer lists {}, sort, lexicographical order, #include syntax, snake_case, priority_queue, push_back, and pointer behavior."
+    },
+    {
+      "role": "candidate",
+      "text": "Submitted initial C++ implementation using a sorted project list, priority_queue<int>, pointer, and k iterations."
+    },
+    {
+      "role": "interviewer",
+      "text": "Pointed out that without stopping at the first unaffordable sorted project, later projects are unnecessarily rescanned."
+    },
+    {
+      "role": "candidate",
+      "text": "Added `if (pairs[i][0] > w) break;` and understood why this avoids worst-case repeated O(k*n) scanning."
+    },
+    {
+      "role": "candidate",
+      "text": "Dry-ran k=2, w=0, profits=[1,2,3], capital=[0,1,1] and corrected the final capital to 4."
+    },
+    {
+      "role": "candidate",
+      "text": "Handled the edge case where no project is initially affordable and the heap remains empty."
+    },
+    {
+      "role": "candidate",
+      "text": "Concluded final optimized complexity is O(n log n) time and O(n) space."
+    },
+    {
+      "role": "candidate",
+      "text": "Submitted the final C++ implementation with early break and empty-heap check."
+    }
+  ]
+}
