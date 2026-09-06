@@ -122,79 +122,565 @@
   "transcript": [
     {
       "role": "candidate",
-      "text": "Problem understanding: inputs are k, w, profits, capital; choose up to k projects to maximize final capital, subject to minimum capital requirements."
+      "text": "502 시작"
+    },
+    {
+      "role": "candidate",
+      "text": "시간도 기록해줘. 지금부터 시작."
     },
     {
       "role": "interviewer",
-      "text": "Clarified that profit is added to current capital rather than replacing it."
+      "text": "좋아. **502. IPO 인터뷰 시작 시각: 2026-08-30 14:27:55 (KST)**로 기록할게. 끝날 때 종료 시각과 총 소요시간도 같이 계산해둘게.\n\n**Interviewer:**  \nBefore thinking about the solution, could you explain the problem back to me in your own words? What are the inputs, and what exactly are we trying to maximize?"
     },
     {
       "role": "candidate",
-      "text": "Proposed greedy selection: at each step choose the highest-profit currently affordable unselected project."
-    },
-    {
-      "role": "candidate",
-      "text": "Identified straightforward complexity as O(k*n)."
+      "text": "Inputs are k, w, profits and capital. \nI can choose k projects in the way that I can get maximum profits at the end. Each project can be selected when I have minimum capital it needs."
     },
     {
       "role": "interviewer",
-      "text": "Asked what repeated work causes O(k*n), then guided toward maintaining already-affordable projects."
+      "text": "Good.\n\n**Interviewer:**  \nAfter you complete one project, how does your available capital `w` change?"
     },
     {
       "role": "candidate",
-      "text": "Considered categorizing projects by capital and using maps; could not yet identify the best structure for repeatedly selecting maximum profit."
+      "text": "The profit of that project will be my capital."
     },
     {
       "role": "interviewer",
-      "text": "Gradually prompted toward a max heap / priority_queue."
+      "text": "**Interviewer:**  \nDoes the profit **replace** your current capital, or is it **added to** your current capital after completing the project?"
     },
     {
       "role": "candidate",
-      "text": "Identified max heap after hints."
+      "text": "It is added."
     },
     {
       "role": "interviewer",
-      "text": "Guided toward sorting projects by required capital and scanning them with a forward-only pointer as w increases."
+      "text": "Great. So after completing project `i`, your capital becomes:\n\n`w = w + profits[i]`\n\nNow, before thinking about an optimized solution, what is the most straightforward brute-force approach you can think of?"
     },
     {
       "role": "candidate",
-      "text": "Worked through examples and understood that all newly affordable profits are pushed to the heap, while unchosen profits remain there."
-    },
-    {
-      "role": "candidate",
-      "text": "Asked about heap insertion/deletion complexity, sorting complexity, Big-O constant removal, and sequential vs nested complexity."
-    },
-    {
-      "role": "candidate",
-      "text": "Asked implementation questions about vector<vector<int>>, pair alternatives, initializer lists {}, sort, lexicographical order, #include syntax, snake_case, priority_queue, push_back, and pointer behavior."
-    },
-    {
-      "role": "candidate",
-      "text": "Submitted initial C++ implementation using a sorted project list, priority_queue<int>, pointer, and k iterations."
+      "text": "I can use greedy algorithm, which I always choose the selection that I can get the most profits in k-steps"
     },
     {
       "role": "interviewer",
-      "text": "Pointed out that without stopping at the first unaffordable sorted project, later projects are unnecessarily rescanned."
+      "text": "**Interviewer:**  \nWhen you say “always choose the project with the highest profit,” among which projects are you choosing — all remaining projects, or only the projects you can currently afford with your capital `w`?"
     },
     {
       "role": "candidate",
-      "text": "Added `if (pairs[i][0] > w) break;` and understood why this avoids worst-case repeated O(k*n) scanning."
+      "text": "The last one. Each step, I choose 1 projects with biggest profits among selections affordable with w capital that are unselected before."
+    },
+    {
+      "role": "interviewer",
+      "text": "Good. Suppose you implement that idea in the most straightforward way by scanning all unselected projects at each of the `k` steps.\n\nWhat would the time complexity be?"
     },
     {
       "role": "candidate",
-      "text": "Dry-ran k=2, w=0, profits=[1,2,3], capital=[0,1,1] and corrected the final capital to 4."
+      "text": "It is O(k*n)"
+    },
+    {
+      "role": "interviewer",
+      "text": "Correct.\n\n**Interviewer:**  \nCan you think about what is expensive in that `O(k * n)` approach? What work are we repeating at every step that we might avoid?"
     },
     {
       "role": "candidate",
-      "text": "Handled the edge case where no project is initially affordable and the heap remains empty."
+      "text": "잠깐 스탑할게. 시간 기록해줘. 화장실 좀."
+    },
+    {
+      "role": "interviewer",
+      "text": "좋아. **14:38:24 KST에 일시정지**로 기록할게.\n\n현재 실전 풀이 시간은 **약 10분 29초**야. 다시 오면 `재개`라고 해줘. 그 시점부터 다시 시간 이어서 기록할게."
     },
     {
       "role": "candidate",
-      "text": "Concluded final optimized complexity is O(n log n) time and O(n) space."
+      "text": "재개"
+    },
+    {
+      "role": "interviewer",
+      "text": "재개 시각 **14:52:31 KST**로 기록했어.  \n중단 시간은 제외하고, 현재 누적 실전 풀이 시간은 **10분 29초**에서 다시 이어갈게.\n\n**Interviewer:**  \nIn your `O(k * n)` approach, what work are we repeating at every step that we might avoid?"
     },
     {
       "role": "candidate",
-      "text": "Submitted the final C++ implementation with early break and empty-heap check."
+      "text": "In each k step, I need to scan all n items to find project in specific condition (project which consumes under c capital & biggest profits.)"
+    },
+    {
+      "role": "interviewer",
+      "text": "**Interviewer:**  \nRight. Since your capital `w` only increases over time, can you think of a way to avoid re-checking projects that were already known to be affordable in previous steps?"
+    },
+    {
+      "role": "candidate",
+      "text": "I would like to categorize projects by capital and sort each projects in  categories by profits.\nUsing maps?"
+    },
+    {
+      "role": "interviewer",
+      "text": "**Interviewer:**  \nA map could help organize projects by required capital.\n\nBut suppose your current capital `w` makes **many capital categories affordable at once**. How would you efficiently choose the single highest-profit project across all of those affordable categories without scanning them all again?"
+    },
+    {
+      "role": "candidate",
+      "text": "i don;t know..."
+    },
+    {
+      "role": "interviewer",
+      "text": "**Interviewer:**  \nNo problem. Let’s narrow it down.\n\nAt each step, you have a set of projects that are already affordable, and from that set you repeatedly need to get the project with the **maximum profit**.\n\nWhat kind of data structure is good at repeatedly returning the largest value efficiently?"
+    },
+    {
+      "role": "candidate",
+      "text": "Tree ..?"
+    },
+    {
+      "role": "interviewer",
+      "text": "A balanced tree could work.\n\n**Interviewer:**  \nCan you think of a simpler data structure that supports these two operations efficiently?\n\n- insert a newly affordable project’s profit\n- repeatedly remove the **maximum** profit\n\nWhat structure is commonly used for that?"
+    },
+    {
+      "role": "candidate",
+      "text": "stack?"
+    },
+    {
+      "role": "interviewer",
+      "text": "**Interviewer:**  \nA stack gives you the most recently added item, not necessarily the largest one.\n\nWhat data structure is designed to keep track of the **largest or smallest element** efficiently as elements are inserted and removed?"
+    },
+    {
+      "role": "candidate",
+      "text": "array..!"
+    },
+    {
+      "role": "interviewer",
+      "text": "**Interviewer:**  \nAn array can store the values, but unless it stays sorted, finding and removing the maximum would still cost up to `O(n)`.\n\nThink of a structure where the largest element is always kept at the top. What is that called?"
+    },
+    {
+      "role": "candidate",
+      "text": "max heap."
+    },
+    {
+      "role": "interviewer",
+      "text": "Exactly.\n\n**Interviewer:**  \nNow you have one useful structure: a **max heap of profits for projects that are currently affordable**.\n\nThe remaining question is: how can you efficiently discover newly affordable projects whenever `w` increases, without scanning all `n` projects again?"
+    },
+    {
+      "role": "candidate",
+      "text": "글쓰기 블록으로 바꿔줘"
+    },
+    {
+      "role": "interviewer",
+      "text": "Let’s use your own idea instead of jumping to the answer."
+    },
+    {
+      "role": "candidate",
+      "text": "very difficult for me.."
+    },
+    {
+      "role": "interviewer",
+      "text": "That makes sense — this is a **Hard** problem, and the second half of the optimization is the tricky part.\n\nLet’s use **your own idea** instead of jumping to the answer.\n\n**Interviewer:**  \nYou said earlier:\n\n> “categorize projects by capital and sort…”\n\nSuppose we simply **sort all projects by required capital from smallest to largest**.\n\nAs `w` increases, could we keep a pointer and move it forward, adding every newly affordable project into the max heap?\n\nWhat do you think would happen then?"
+    },
+    {
+      "role": "candidate",
+      "text": "글쓰기 블록으로 바꿔줘"
+    },
+    {
+      "role": "interviewer",
+      "text": "Let’s use your own idea instead of jumping to the answer."
+    },
+    {
+      "role": "candidate",
+      "text": "max heap where nodes are array ..?"
+    },
+    {
+      "role": "interviewer",
+      "text": "Yes, it **could** store an array/pair, but in this approach you actually only need the **profit** inside the max heap.\n\nFor example, after sorting projects by required capital, you might conceptually have:\n\n`[(capital, profit), (capital, profit), ...]`\n\nThen whenever a project becomes affordable, you insert just its `profit` into the max heap.\n\n**Interviewer:**  \nSo if the projects are sorted by `capital`, and you have a pointer `i`, what condition should you use to decide which projects get pushed into the max heap?"
+    },
+    {
+      "role": "candidate",
+      "text": "```\nInput: k = 3, w = 0, profits = [1,2,3], capital = [0,1,2]\n```\n\nFor example, \n[(0, 1), (1, 2), (2, 3)]\n\n```\nInput: k = 2, w = 0, profits = [1,2,3], capital = [0,1,1]\n```\n\nIn case 1, \n[(0, 1), (1, 3), (1, 2)]"
+    },
+    {
+      "role": "interviewer",
+      "text": "Yes — that representation is fine.\n\nFor the second example, after sorting by required capital, this is valid:\n\n`[(0, 1), (1, 3), (1, 2)]`\n\nThe order between the two projects with capital `1` does not matter.\n\n**Interviewer:**  \nAt the beginning, `w = 0`.\n\nLooking at your sorted list, **which projects are currently affordable and should be pushed into the max heap?**"
+    },
+    {
+      "role": "candidate",
+      "text": "Firstly, (0,1) can be the head, right?"
+    },
+    {
+      "role": "interviewer",
+      "text": "Yes. Since `w = 0`, only `(0, 1)` is affordable.\n\nSo you would push its **profit `1`** into the max heap, and `1` becomes the top.\n\n**Interviewer:**  \nAfter selecting that project, your capital becomes `w = 1`.\n\nNow which additional projects become affordable, and what gets pushed into the max heap?"
+    },
+    {
+      "role": "candidate",
+      "text": "(1,3) can be pushed into the max heap since it has bigger profit thatn (1,2)"
+    },
+    {
+      "role": "interviewer",
+      "text": "Both `(1,3)` **and** `(1,2)` become affordable when `w = 1`, so we should push **both profits** into the max heap.\n\nThen the heap contains:\n\n`[3, 2]`\n\nand `3` is at the top.\n\n**Interviewer:**  \nWhy is it useful to push *all* newly affordable projects into the max heap, instead of only pushing the currently biggest one?"
+    },
+    {
+      "role": "candidate",
+      "text": "Because, we can remove all the scanned ones?"
+    },
+    {
+      "role": "interviewer",
+      "text": "Yes — that’s part of it.\n\nMore precisely, once a project becomes affordable, we can put it into the heap and **never scan that project again from the sorted list**. Even if we don’t choose it immediately, it stays in the heap as a candidate for a later step.\n\nSo after `w = 1`, both profits `3` and `2` are in the heap. We choose `3`, but `2` stays there for the next round.\n\n**Interviewer:**  \nNow can you describe the whole algorithm from start to finish using:\n- the sorted `(capital, profit)` list,\n- one pointer,\n- and the max heap?"
+    },
+    {
+      "role": "candidate",
+      "text": "1. I need to sort items by capital in the stack of (capital, profit). \n2. I should prepare 2*n size of array and set 1 pointer in the middle of arary (index n) which will be the max heap.\n3. Each k, I should pop out the profits which capital is enough, and update max heap."
+    },
+    {
+      "role": "interviewer",
+      "text": "You’re very close on the overall structure. I’d adjust two details:\n\n- The projects should be **sorted by capital**, but they don’t need to be a stack.\n- You don’t need a special `2*n` array or a pointer in the middle. Just use a normal **max heap** plus one pointer `i` into the sorted project list.\n\nSo conceptually:\n\n`projects = [(capital, profit), ...]` sorted by capital  \n`i = 0`  \n`maxHeap = empty`\n\nFor each of the `k` rounds:\n\n1. While `i < n` and `projects[i].capital <= w`, push that project's **profit** into the max heap and increment `i`.\n2. If the heap is empty, you cannot start any more projects.\n3. Otherwise, pop the maximum profit and add it to `w`.\n\n**Interviewer:**  \nGiven that corrected structure, can you now explain **why each project is processed at most once from the sorted list**?"
+    },
+    {
+      "role": "candidate",
+      "text": "what is normla max heap in c++?"
+    },
+    {
+      "role": "interviewer",
+      "text": "In C++, the normal max heap is `std::priority_queue`.\n\n`priority_queue<int> maxHeap;`\n\nBy default, the **largest value is always on top**.\n\nFor this problem, since you only need to choose the biggest **profit**, this is enough:\n\n`priority_queue<int> maxHeap;`\n\n**Interviewer:**  \nNow, if we sort the projects by capital and move pointer `i` only forward, how many times can each project be pushed into the heap at most?"
+    },
+    {
+      "role": "candidate",
+      "text": "홀드할게."
+    },
+    {
+      "role": "interviewer",
+      "text": "홀드 기록했어.\n\n- 시작: **14:27:55**\n- 1차 홀드: **14:38:24**\n- 재개: **14:52:31**\n- 2차 홀드: **15:38:47**\n- **누적 실전 풀이 시간: 56분 45초**\n\n중단 시간은 제외해서 계산했어. 재개할 때 `재개`라고 해줘."
+    },
+    {
+      "role": "candidate",
+      "text": " n can be pushed ino the heap at most"
+    },
+    {
+      "role": "interviewer",
+      "text": "Almost — **each individual project can be pushed into the heap at most once**, so across all projects there are at most **`n` pushes total**.\n\nThe pointer only moves forward, so once a project has been added to the heap, we never revisit it in the sorted list.\n\nTimer is still **paused** for now.\n\n**Interviewer:**  \nGiven:\n- sorting `n` projects by capital,\n- at most `n` heap pushes,\n- at most `k` heap pops,\n\nwhat would the overall time complexity be?"
+    },
+    {
+      "role": "candidate",
+      "text": "재개."
+    },
+    {
+      "role": "interviewer",
+      "text": "재개 시각 **15:40:22 KST**로 기록했어.  \n누적 실전 풀이 시간은 **56분 45초**에서 다시 이어갈게.\n\n**Interviewer:**  \nGiven:\n- sorting `n` projects by capital,\n- at most `n` heap pushes,\n- at most `k` heap pops,\n\nwhat would the overall time complexity be?"
+    },
+    {
+      "role": "candidate",
+      "text": "Wha tis the time complexity of insertion heap? n*logn?\nwhat is the time coplexity of deletion in the heap? n*logn?"
+    },
+    {
+      "role": "interviewer",
+      "text": "For a heap with up to `n` elements:\n\n- **One insertion (`push`)**: `O(log n)`\n- **One deletion of the max (`pop`)**: `O(log n)`\n\nSo:\n- up to **`n` insertions total** → `O(n log n)`\n- up to **`k` deletions total** → `O(k log n)`\n- sorting → `O(n log n)`\n\nSo overall: **`O((n + k) log n)`**\n\n**Interviewer:**  \nCan you now explain why this is better than the original `O(k * n)` approach?"
+    },
+    {
+      "role": "candidate",
+      "text": "what nlogn for sorgin ? why the total time complexity is not 2nlogn + klogn?"
+    },
+    {
+      "role": "interviewer",
+      "text": "맞아. 더 정확히 쓰면:\n\n- 정렬: `O(n log n)`\n- heap에 최대 `n`번 push: `O(n log n)` total\n- 최대 `k`번 pop: `O(k log n)` total\n\n그래서 `O(2n log n + k log n)`이 맞고, Big-O에서는 상수 `2`를 버려서 `O(n log n + k log n)`으로 단순화해.\n\n**Interviewer:**  \nThen if `k <= n`, could we simplify the overall complexity even further?"
+    },
+    {
+      "role": "candidate",
+      "text": "IT's nlogn"
+    },
+    {
+      "role": "interviewer",
+      "text": "Exactly.\n\nSince `k <= n` in this problem, the overall time complexity simplifies to **`O(n log n)`**.\n\n**Interviewer:**  \nGood. Before coding, can you now summarize the final algorithm from start to finish in your own words?"
+    },
+    {
+      "role": "candidate",
+      "text": "왜 시간복잡도에서 상수는 버려?"
+    },
+    {
+      "role": "interviewer",
+      "text": "Big-O는 입력 크기 `n`이 커질 때 **성장 속도**를 보는 표기라서 상수배는 버려.\n\n예를 들어 `n log n`, `2n log n`, `100n log n`은 실제 연산 수는 다르지만 같은 비율로 증가하므로 모두 `O(n log n)`으로 본다.\n\n**Interviewer:**  \nNow that the complexity is clear, can you summarize the final algorithm before you start coding?"
+    },
+    {
+      "role": "candidate",
+      "text": "Okay, we can sort the array by capital.\nAnd each k steps, we can do:\n\n1. push items to the heap which items' capital is under or same with w.\n2. pop and add the max item in the heap."
+    },
+    {
+      "role": "interviewer",
+      "text": "Good — that’s the core idea.\n\nOne important detail is still missing: we need a pointer into the sorted project list so that we don’t rescan old projects.\n\n**Interviewer:**  \nWhat should we do if, during one of the `k` steps, the max heap is empty after adding all currently affordable projects?"
+    },
+    {
+      "role": "candidate",
+      "text": "Okay, we can sort the array by capital. \n\nAnd each k steps, we can do:\n\n1. push items to the heap which items' capital is under or same with w. and update the pointer after the last scanned one.\n2. pop and add the max item in the heap."
+    },
+    {
+      "role": "interviewer",
+      "text": "Good. That’s a much cleaner explanation.\n\nOne more edge case before coding.\n\n**Interviewer:**  \nSuppose after pushing all projects with `capital <= w`, the max heap is empty. What should the algorithm do at that point?"
+    },
+    {
+      "role": "candidate",
+      "text": "how can be the max heap is empty?"
+    },
+    {
+      "role": "interviewer",
+      "text": "For example, if `w = 0` and all remaining projects require capital greater than `0`, then none of them can be pushed into the heap.\n\nIn that case, you cannot select any more projects, so you should stop early and return the current `w`.\n\n**Interviewer:**  \nHow would you express that condition in code before calling `heap.top()` or `heap.pop()`?"
+    },
+    {
+      "role": "candidate",
+      "text": "we can check the pointer's capital and value is smaller thatn w."
+    },
+    {
+      "role": "interviewer",
+      "text": "Checking the pointer tells you whether there are more projects in the sorted list, but it does **not** tell you whether the heap currently has an affordable project.\n\nSo before `top()` or `pop()`, the safe check is:\n\n`if (maxHeap.empty()) { break; }`\n\n**Interviewer:**  \nGreat. You’ve now defined the full approach. Go ahead and write the C++ solution."
+    },
+    {
+      "role": "candidate",
+      "text": "why do we need to check empty ? to end safely?"
+    },
+    {
+      "role": "interviewer",
+      "text": "Exactly. Mainly **to end safely**.\n\nIf the heap is empty, that means there is currently **no affordable project available**.\n\nSo checking `maxHeap.empty()` both prevents invalid `top()`/`pop()` and stops because no further progress is possible.\n\n**Interviewer:**  \nNow go ahead and write the C++ implementation."
+    },
+    {
+      "role": "candidate",
+      "text": "what if we try to top or pop in the empty max heap ?"
+    },
+    {
+      "role": "interviewer",
+      "text": "In C++, calling `top()` or `pop()` on an empty `priority_queue` is **undefined behavior**.\n\nSo always check `maxHeap.empty()` first.\n\n**Interviewer:**  \nNow write the C++ implementation using the sorted `(capital, profit)` list, a pointer, and `priority_queue<int>`."
+    },
+    {
+      "role": "candidate",
+      "text": "how can I sort ?"
+    },
+    {
+      "role": "interviewer",
+      "text": "If you store each project as `vector<pair<int, int>> projects;` where `{capital, profit}`, you can call:\n\n`sort(projects.begin(), projects.end());`\n\n`std::pair` is sorted lexicographically by default: first by capital, then by profit.\n\n**Interviewer:**  \nNow using `projects`, `priority_queue<int> maxHeap`, and pointer `i`, try writing the `for` loop that runs at most `k` times."
+    },
+    {
+      "role": "candidate",
+      "text": "okay. pause."
+    },
+    {
+      "role": "interviewer",
+      "text": "일시정지했어.\n\n- 3차 홀드: **15:50:44 KST**\n- 이번 구간: **10분 22초**\n- 누적 실전 풀이 시간: **1시간 7분 7초**\n\n다시 시작할 때 `재개`라고 해줘."
+    },
+    {
+      "role": "candidate",
+      "text": "재개"
+    },
+    {
+      "role": "interviewer",
+      "text": "재개 시각 **00:05:39 KST**로 기록했어.  \n누적 실전 풀이 시간은 **1시간 7분 7초**에서 다시 이어갈게.\n\n**Interviewer:**  \nNow using `projects`, `priority_queue<int> maxHeap`, and pointer `i`, try writing the loop that runs at most `k` times."
+    },
+    {
+      "role": "candidate",
+      "text": "아 잠깐 아까 재개한거 빼주고, 지금부터 재개."
+    },
+    {
+      "role": "interviewer",
+      "text": "좋아. **00:05:39 재개는 취소**하고, 그 이후 시간은 전부 제외할게.\n\n지금 **00:19:25 KST부터 재개**로 기록했어.  \n누적 실전 풀이 시간은 그대로 **1시간 7분 7초**에서 이어간다.\n\n**Interviewer:**  \nNow using `projects`, `priority_queue<int> maxHeap`, and pointer `i`, try writing the loop that runs at most `k` times."
+    },
+    {
+      "role": "candidate",
+      "text": "1. 이중 vector push 문법 모르겠음\n2. 배열 sort 문법 모르겠음\n3. max heap library 모르겠음"
+    },
+    {
+      "role": "interviewer",
+      "text": "응. 이건 **알고리즘을 모르는 게 아니라 C++ STL 문법이 익숙하지 않은 부분**이라 인터뷰 중에 따로 정리해도 돼.\n\n필요한 핵심 문법:\n- `vector<pair<int,int>> projects;`\n- `projects.push_back({capital[i], profits[i]});`\n- `sort(projects.begin(), projects.end());`\n- `priority_queue<int> maxHeap;`\n\n**Interviewer:**  \nUsing those building blocks, can you try writing just the outer `for` loop and the `while` condition that adds all projects with `capital <= w` into the max heap?"
+    },
+    {
+      "role": "candidate",
+      "text": "pair를 몰라서 vector<vector<int, int>>  면 sort는 어떻게 돼"
+    },
+    {
+      "role": "interviewer",
+      "text": "`vector<vector<int, int>>`는 문법상 안 돼. 대신:\n\n`vector<vector<int>> projects;`\n\n각 프로젝트는:\n`projects.push_back({capital[i], profits[i]});`\n\n그리고:\n`sort(projects.begin(), projects.end());`\n\n하면 `vector<int>`도 기본적으로 사전식 정렬돼.\n\n**Interviewer:**  \n그럼 이제 `projects[i][0] <= w`인 프로젝트들을 max heap에 넣는 `while`문을 직접 써볼래?"
+    },
+    {
+      "role": "candidate",
+      "text": "사전식 정렬이 뭐야ㅑ?"
+    },
+    {
+      "role": "interviewer",
+      "text": "사전식 정렬은 **앞 원소부터 비교하고, 같으면 다음 원소를 비교하는 정렬**이야.\n\n예:\n`[[1,3],[0,1],[1,2]]`\n→\n`[[0,1],[1,2],[1,3]]`\n\n이번 문제에서는 자연스럽게 capital 기준 오름차순이 돼."
+    },
+    {
+      "role": "candidate",
+      "text": "{} 가 배열? vector야?"
+    },
+    {
+      "role": "interviewer",
+      "text": "`{}` 자체가 배열이나 vector인 건 아니고, **initializer list** 문법이야.\n\n예:\n`vector<int> a = {1,2,3};`\n\n`projects.push_back({capital[i], profits[i]});`에서는 `projects`의 원소 타입이 `vector<int>`이므로 `{capital[i], profits[i]}`가 `vector<int>` 하나로 만들어져 들어가는 거야."
+    },
+    {
+      "role": "candidate",
+      "text": "#include <algorithm>;\n#include queue;\n꺽쇠 넣어야해?"
+    },
+    {
+      "role": "interviewer",
+      "text": "응, **꺾쇠 `< >` 넣어야 해.** 그리고 `#include` 뒤에는 세미콜론을 붙이지 않아.\n\n정확한 문법:\n\n#include <algorithm>\n#include <queue>\n#include <vector>"
+    },
+    {
+      "role": "candidate",
+      "text": "c++ 은 snake 변수명에 snake 스타일말고, 소문자 대문자 로 연결된거로 써? 관례가"
+    },
+    {
+      "role": "interviewer",
+      "text": "C++은 하나의 절대적인 관례는 없는데, 코테/LeetCode에서는 `lowerCamelCase`도 흔하고 `snake_case`도 많이 써.\n\n중요한 건 **한 파일 안에서 일관성**이야."
+    },
+    {
+      "role": "candidate",
+      "text": "내가 익숙한건 nsake style이긴해"
+    },
+    {
+      "role": "interviewer",
+      "text": "그럼 그냥 **snake_case 계속 써도 돼.** C++에서도 자연스러운 스타일이고, 익숙한 스타일을 유지하는 게 좋아."
+    },
+    {
+      "role": "candidate",
+      "text": "priority_queue 도 배열이라고 생각하면 되나?"
+    },
+    {
+      "role": "interviewer",
+      "text": "개념적으로는 값을 담는 컨테이너라고 생각할 수 있지만, 그냥 배열이라고 생각하면 조금 헷갈릴 수 있어.\n\n`priority_queue`는 내부적으로 보통 `vector`를 사용하지만 `a[0]`, `a[1]`처럼 아무 위치나 접근하지 않아.\n\n주로:\n- `push`\n- `top`\n- `pop`\n- `empty`\n\n를 쓰고, **최댓값이 항상 top에 있다**는 점이 핵심이야."
+    },
+    {
+      "role": "candidate",
+      "text": "왜 push_back 을 써야해?"
+    },
+    {
+      "role": "interviewer",
+      "text": "`projects`가 **vector**라서 그래.\n\n`push_back()`은 vector의 맨 뒤에 새 원소 하나를 추가하는 함수야.\n\n`projects.push_back({capital[i], profits[i]});`\n\n는 `{capital[i], profits[i]}`라는 프로젝트 하나를 `projects` 뒤에 추가한다는 뜻이야."
+    },
+    {
+      "role": "candidate",
+      "text": "            for (int i=pointer; i < n; i++){\n                if (capital[i] <= w) {\n                    max_heap.push(pairs[i][0]);\n                    pointer++;\n                }\n            }\n이렇게 되었을떄, int i=pointer의 포인터 값은 계속 바뀌어?"
+    },
+    {
+      "role": "interviewer",
+      "text": "아니. `for (int i = pointer; ...)`에서 `i`는 for문이 시작되는 순간의 `pointer` 값을 복사해서 초기화해.\n\n그 뒤 `pointer++` 해도 이미 만들어진 `i`가 자동으로 따라 바뀌지는 않아.\n\n그리고 지금 코드에서는 원본 `capital[i]`가 아니라 정렬된 `pairs[i][0]`을 봐야 하고, heap에는 profit인 `pairs[i][1]`을 넣어야 해.\n\n**Interviewer:**  \nSince `pairs` is sorted by capital, if `pairs[i][0] > w`, do we need to keep checking `i+1`, `i+2`, ...?"
+    },
+    {
+      "role": "candidate",
+      "text": "#include <algorithm>\n#include <queue>\n\n\nclass Solution {\npublic:\n    int findMaximizedCapital(int k, int w, vector<int>& profits, vector<int>& capital) {\n\n        int n = profits.size();\n        vector<vector<int>> pairs;\n        priority_queue<int> max_heap;\n        int pointer = 0;\n\n        // 1. make [(capital, profits)...]\n        for (int i=0; i < n; i++){\n            pairs.push_back({capital[i], profits[i]});\n        }\n\n        // 2. sort [(capital, profits)...]\n        sort(pairs.begin(), pairs.end());\n\n        // 3. insert to max_heap & pop max profit for k times\n        // Use pointer to remember last scanned item\n        while (k > 0) {\n\n            for (int i=pointer; i < n; i++){\n                if (pairs[i][0] <= w) {\n                    max_heap.push(pairs[i][1]);\n                    pointer++;\n                }\n            }\n            if (max_heap.empty()) break;\n            w += max_heap.top();\n            max_heap.pop();\n            k--;\n        }\n\n        return w;\n    }\n};\n여기 풀이있어. 이제 웹사이트에 인터뷰 대화랑 내가 구현단계에서 물어본 질문들 정리해서 웹사이트에 추가해줘."
+    },
+    {
+      "role": "interviewer",
+      "text": "좋아. 이번 502 인터뷰를 완료 기록으로 넣고, 대화 transcript와 구현 단계에서 물어본 C++/STL 질문들도 별도 회고 항목으로 정리해서 사이트에 반영할게.\n\n그리고 네 현재 코드는 동작은 하지만 한 군데 때문에 시간복잡도가 다시 `O(k·n)`에 가까워질 수 있어서, 그 부분도 리뷰에 같이 남기겠다."
+    },
+    {
+      "role": "candidate",
+      "text": "혹시 풀고나서 인터뷰 대화 남은 대화있는거야?"
+    },
+    {
+      "role": "interviewer",
+      "text": "응. **아직 인터뷰가 완전히 끝난 건 아니야.**\n\n코드 작성 뒤에도:\n- 코드 리뷰\n- 테스트\n- edge case dry-run\n- 실제 코드 기준 시간/공간복잡도\n- 개선 follow-up\n- 최종 wrap-up\n\n이 남아 있어.\n\n즉 지금은 **Coding 단계 완료 → Testing/Review 단계 진입** 상태야."
+    },
+    {
+      "role": "candidate",
+      "text": "헉 그래.. 진행하자."
+    },
+    {
+      "role": "interviewer",
+      "text": "**Interviewer:**  \nLet’s review your `for` loop carefully.\n\nSuppose `pairs` is sorted by capital, and at some index `i` you find:\n\n`pairs[i][0] > w`\n\nWhat can you say about `pairs[i + 1][0]`, `pairs[i + 2][0]`, and the rest?\n\nDo we still need to scan them in this round?"
+    },
+    {
+      "role": "candidate",
+      "text": "we don't need to scan them, since they can't be selected. the w is not enough to start the projects."
+    },
+    {
+      "role": "interviewer",
+      "text": "Exactly.\n\nBecause the list is sorted by required capital, once `pairs[i][0] > w`, every later project also requires at least as much capital. So there’s no reason to keep scanning in that round.\n\n**Interviewer:**  \nHow would you change your loop so that you stop scanning immediately at that point?"
+    },
+    {
+      "role": "candidate",
+      "text": "Oh yes, I can add conditions to triage them. \n\nI can replace condition in the for loop like this:\n\n            for (int i=pointer; i < n; i++){\n                if (pairs[i][0] > w) break;\n                max_heap.push(pairs[i][1]);\n                pointer++;\n            }"
+    },
+    {
+      "role": "interviewer",
+      "text": "Exactly. That fixes the unnecessary scanning.\n\nNow each project is examined only until it becomes affordable, and once it’s pushed, `pointer` moves past it permanently.\n\n**Interviewer:**  \nLet’s test your code with this case:\n\nk = 2\nw = 0\nprofits = [1, 2, 3]\ncapital = [0, 1, 1]\n\nCan you walk me through:\n1. what `pairs` looks like after sorting,\n2. what gets pushed into `max_heap` in round 1,\n3. how `w` changes,\n4. what happens in round 2?"
+    },
+    {
+      "role": "candidate",
+      "text": "`pointer` moves past it permanently. 가 안 움직인다는 뜻이야?"
+    },
+    {
+      "role": "interviewer",
+      "text": "아니, 반대야. **pointer가 앞으로 이동해서 그 프로젝트를 지나간 뒤에는 다시 돌아가지 않는다**는 뜻이야.\n\n**Interviewer:**  \nFor this input, what does `pairs` look like after sorting?"
+    },
+    {
+      "role": "candidate",
+      "text": "1. [{0, 1}, {1, 2}, {1, 3}] \n2. [1] is pushed\n3. w becomes 1 after 1 pop out.\n4. in the round 2, profit [2, 3] are pushed to max_heap. And the 3 is pop out and w becomes 3."
+    },
+    {
+      "role": "interviewer",
+      "text": "Almost perfect — just re-check the last arithmetic.\n\nAfter round 1, `w = 1`.\n\nIn round 2, profits `2` and `3` are pushed, then `3` is popped.\n\n**Interviewer:**  \nWhat is `w` after adding that profit `3` to the current capital `1`?"
+    },
+    {
+      "role": "candidate",
+      "text": "4"
+    },
+    {
+      "role": "interviewer",
+      "text": "Correct.\n\nAfter round 2:\n\n`w = 1 + 3 = 4`\n\n**Interviewer:**  \nNow let’s test an edge case.\n\nSuppose:\n\nk = 3\nw = 0\nprofits = [5, 6]\ncapital = [1, 2]\n\nWhat happens in your code in the first round?"
+    },
+    {
+      "role": "candidate",
+      "text": "there's any projects can be started. so the w is ended up with 0."
+    },
+    {
+      "role": "interviewer",
+      "text": "Correct.\n\nSince no project satisfies `capital <= w`, nothing is pushed into the heap. The heap stays empty, so:\n\n`if (max_heap.empty()) break;`\n\nruns and the function returns `0`.\n\n**Interviewer:**  \nNow, based on your **updated code with the early `break`**, what is the final time complexity and space complexity?"
+    },
+    {
+      "role": "candidate",
+      "text": "The original time complexity was O(nlogn).\nAnd now, it's logn ?"
+    },
+    {
+      "role": "interviewer",
+      "text": "Not quite. The early `break` improves the **scanning part**, but the overall complexity is still dominated by sorting and heap operations.\n\n- Sort `n` projects → `O(n log n)`\n- Scan each project at most once → `O(n)`\n- Push each project into heap at most once → `O(n log n)` total\n- Pop at most `k` times → `O(k log n)`\n\nOverall: **`O(n log n)`** because `k <= n`.\n\nSpace: **`O(n)`**.\n\n**Interviewer:**  \nCan you explain, in your own words, why adding that `break` prevents the repeated `O(k * n)` scanning?"
+    },
+    {
+      "role": "candidate",
+      "text": "got it... the edge case can make the time complexity bigger. \n근데 위 4개 시간복잡도를 다 더하는거지? 곱하는건 없고."
+    },
+    {
+      "role": "interviewer",
+      "text": "맞아. **서로 순차적으로 실행되는 단계의 시간복잡도는 더하고**, 한 단계 안에서 다른 반복이 중첩되면 곱해.\n\n이번 코드는:\n`O(n log n) + O(n) + O(n log n) + O(k log n)`\n\n처럼 더하는 게 맞아.\n\n**Interviewer:**  \nThen, in your original code without the `break`, why could that `for` loop become `O(k * n)` in the worst case?"
+    },
+    {
+      "role": "candidate",
+      "text": "근데 break 때문에 On과 O(k log n)를 더하는건가? \n안 그러면, O(n*k)  + O(k log n) 이렇게 더해야해??"
+    },
+    {
+      "role": "interviewer",
+      "text": "맞아. `break`가 없으면 바깥 `while`이 최대 `k`번 돌고 그 안에서 `for`가 매번 최대 `n`개를 다시 볼 수 있으니까 스캔이 `O(k*n)`이 돼.\n\n반면 `break` + forward pointer를 제대로 쓰면 모든 라운드를 통틀어 각 프로젝트를 한 번씩만 지나가므로 스캔 총합이 `O(n)`이 돼."
+    },
+    {
+      "role": "candidate",
+      "text": "공간복잡도도 상수는 버려? 3n인데"
+    },
+    {
+      "role": "interviewer",
+      "text": "응. **공간복잡도도 Big-O에서는 상수배를 버려.**\n\n`O(3n)` → **`O(n)`**\n\n이번 문제에서도 `pairs`와 heap을 합쳐 선형 크기의 추가 메모리를 쓰므로 최종 공간복잡도는 `O(n)`이라고 답하면 돼.\n\n**Interviewer:**  \nCan you now give me the final time complexity and space complexity in one sentence, as if you were answering the interviewer?"
+    },
+    {
+      "role": "candidate",
+      "text": "**`O(k*n + n log n + k log n)`** **이거 였으면 시간복잡도는 o(n^2)이야?**"
+    },
+    {
+      "role": "interviewer",
+      "text": "응. **`k <= n`이라고 보면 최종적으로 `O(n²)`로 단순화할 수 있어.**\n\n`O(kn + n log n + k log n)`에서 worst case로 `k = n`을 보면:\n- `kn` → `n²`\n- `n log n`\n- `k log n` → `n log n`\n\n그래서 `O(n² + 2n log n)` → **`O(n²)`**.\n\n즉 `break` 없는 구현은 worst case에서 quadratic, `break` + pointer를 제대로 활용하면 `O(n log n)`이야."
+    },
+    {
+      "role": "candidate",
+      "text": "오케이. 인터뷰 더 남은 질문 있어?"
+    },
+    {
+      "role": "interviewer",
+      "text": "응, **거의 끝났고 딱 2개만 남았어.**\n\n1. Final summary\n2. Final code check\n\n**Interviewer:**  \nCould you summarize your final approach and its time and space complexity as if you were wrapping up the interview?"
+    },
+    {
+      "role": "candidate",
+      "text": "Okay.\n\nI used sort and max heap for selecting max profit in each step among the items whose capitals are lower than current capital. \nWhile sorting the pairs, time complexity is O(n*logn) - using the sort library.\nO(n) was spent for scanning pairs.\nIn each k step, max_heap push & pop spent O(n*logn) each times.\n\nTotally, O(n*logn) + O(n)+ O(nlogn)+O(n*logn) was spent, and the time complexity is O(n*logn).\n\nFor the space complexity, we used n length pairs, which is 2n, so total O(n)."
+    },
+    {
+      "role": "interviewer",
+      "text": "Good summary overall. One correction: **heap push/pop are not `O(n log n)` each time.**\n\nAcross the **entire algorithm**:\n\n- Sorting → `O(n log n)`\n- Scanning with the pointer → `O(n)` total\n- Heap pushes → at most `n` pushes × `O(log n)` = `O(n log n)` total\n- Heap pops → at most `k` pops × `O(log n)` = `O(k log n)` total\n\nSo overall **`O(n log n)`**, and space is **`O(n)`**.\n\n**Interviewer — final check:**  \nPlease show me your **final C++ code**, including the `break` you added when `pairs[i][0] > w`.\n\nAfter that, the interview is finished and I’ll give you the full coding + English evaluation and tracker update."
+    },
+    {
+      "role": "candidate",
+      "text": "#include <algorithm>\n#include <queue>\n\n\nclass Solution {\npublic:\n    int findMaximizedCapital(int k, int w, vector<int>& profits, vector<int>& capital) {\n\n        int n = profits.size();\n        vector<vector<int>> pairs;\n        priority_queue<int> max_heap;\n        int pointer = 0;\n\n        // 1. make [(capital, profits)...]\n        for (int i=0; i < n; i++){\n            pairs.push_back({capital[i], profits[i]});\n        }\n\n        // 2. sort [(capital, profits)...]\n        sort(pairs.begin(), pairs.end());\n\n        // 3. insert to max_heap & pop max profit for k times\n        // Use pointer to remember last scanned item\n        while (k > 0) {\n\n            for (int i=pointer; i < n; i++){\n                if (pairs[i][0] > w) break;\n                max_heap.push(pairs[i][1]);\n                pointer++;\n            }\n            if (max_heap.empty()) break;\n            w += max_heap.top();\n            max_heap.pop();\n            k--;\n        }\n\n        return w;\n    }\n};"
     }
-  ]
+  ],
+  "transcript_mode": "full_chronological",
+  "transcript_message_count": 140
 }
