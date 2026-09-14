@@ -9,5 +9,15 @@
     "duration_display": "2h 13m 50s",
     "coding_score": 3.2,
     "english_score": 3.2
+  },
+  {
+    "problem_id": 42,
+    "title": "Trapping Rain Water",
+    "difficulty": "Hard",
+    "file": "42.json",
+    "status": "completed",
+    "completed_at": "2026-09-09",
+    "coding_score": 3.4,
+    "english_score": 3.2
   }
 ]
